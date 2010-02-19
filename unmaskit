@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# This file is part of pyhtml2bbcode
+# This file is part of unmaskit
 
-# Copyright (c) 2009-2010 - Fabiano Francesconi, Walter Da Col
-# encomiabile.it (c) 2009-2010 - www.encomiabile.it
+# Copyright (c) 2010 - Fabiano Francesconi
+# encomiabile.it (c) 2010 - www.encomiabile.it
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
