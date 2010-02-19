@@ -37,3 +37,23 @@ def expand_package_name(pname):
 		return matches[len(matches)-1]
 	else:
 		raise portage.exception.InvalidAtom
+
+def get_version_from_atom(aname):
+	"""
+		Returns the version of the given atom
+		Example:
+			dev-util/ktigcc-completion-data-0.96_beta7 => 0.96_beta7
+	"""
+	import re
+	regstr = "^([a-zA-Z0-9\-_\/\+]*)-([0-9\._]+[a-zA-Z0-9]+)"
+	return re.search(regstr, aname).group(2)
+
+def get_package_name_from_atom(aname):
+	"""
+		Returns the package name of the given atom
+		Example:
+			dev-util/ktigcc-completion-data-0.96_beta7 => dev-util/ktigcc-completion-data
+	"""
+	import re
+	regstr = "^([a-zA-Z0-9\-_\/\+]*)-([0-9\._]+[a-zA-Z0-9]+)"
+	return re.search(regstr, aname).group(1)
