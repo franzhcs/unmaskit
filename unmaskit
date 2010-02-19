@@ -25,15 +25,20 @@ import sys
 import os
 import portage
 from optparse import OptionParser
+import commands
 
 config = {
-  'is_source_url' : False,
-  'config_file' : os.path.expanduser("~/.pyhtml2bbcode.cfg"),
-  'compiled_file' :os.path.expanduser("~/.pyhtml2bbcode.srl"),
+	'package_keywords': '/etc/portage/package.keywords',
+	'package_use': '/etc/portage/package.use',
+	'package_unmask': '/etc/portage/package.unmask',
+  'package_to_unmask' : None,
   'source_file' : None,
   'destination_file' : None,
   'verbose' : False,
 }
+
+def is_entry_a_dir(entry):
+	return os.path.isdir(entry)
 
 def main():
 	usage = "usage: %prog [options] package"
@@ -45,47 +50,34 @@ def main():
 
 	# parser options
 	parser.add_option("-n", "--no-version", action="store_true",
-					dest="param_no_version", default=False,
+					dest="no_version", default=False,
 					help="unmask always the latest version")
 	parser.add_option("-p", "--pretend", action="store_true",
-					dest="param_pretend", default=False,
+					dest="pretend", default=False,
 					help="print what would be done")
 	parser.add_option("-q", "--quiet", action="store_true",
-					dest="param_quiet", default=False,
+					dest="quiet", default=False,
 					help="suppress all the output")
 
 	(options, args) = parser.parse_args()
-	config['param_no_version'] = options.param_no_version
-	config['param_pretend'] = options.param_pretend
-	config['param_quiet'] = options.param_quiet
+	config['no_version'] = options.no_version
+	config['pretend'] = options.pretend
+	config['quiet'] = options.quiet
 	
 	print "Using repositories: %s %s" % (portage.settings['PORTDIR'], portage.settings['PORTDIR_OVERLAY'])
+	if (is_entry_a_dir('/etc/portage/package.use')):
+		print "Directory!!"
 
-	os.execve('/bin/sh', ["/bin/sh", '-c', "emerge -pe =nagios-3.2.0"], {})
-	
 	# check args and store their values
-	if (len(args)!=2):
+	if (len(args)!=1):
 		parser.error("incorrect number of arguments. See -h for usage help.")
 	else:
-		config['source_file'] = args[0]
-		config['destination_file'] = args[1]
-	
-	# Read configuration file
-	if config['verbose']:
-		print "Loading configuration file..."
-		
-	if not os.path.exists(config['config_file']):
-		print >> warn, "E: Configuration file cannot be found"
-		exit(1)
+		config['package_to_unmask'] = args[0]
 
-	#Check if config file has been modified using md5 and return dict
-	cmp_re_dict = get_updated_re(config['config_file'],config['compiled_file'])
+#	os.execve('/bin/sh', ["/bin/sh", '-c', "emerge -pe %s" % config['package_to_unmask']], {})
+	x = commands.getoutput('emerge -pe %s' % config['package_to_unmask'])
 
-	if config['verbose']:
-		print "... %d regexp has been found." % len(cmp_re_dict.values()[0])
-	
-	run(cmp_re_dict,config['source_file'],config['destination_file'])
-
+	print x
 
 if __name__ == '__main__':
 	sys.exit(main())
