@@ -6,6 +6,11 @@ http://porthole.svn.sourceforge.net/viewvc/porthole/trunk/porthole/backends/port
 # api ufficiali
 http://dev.gentoo.org/~zmedico/portage/doc/api/portage.dbapi.porttree.portdbapi-class.html
 
+# gentoolkit code
+http://code.google.com/p/genscripts/source/browse/trunk/gentoolkit/pym/gentoolkit/helpers.py
+
+############################################################################################
+
 # Funzione per controllare se un dato nome è un valido atom
 
 # Questa funzione non ritorna altro che vero o falso se la stringa passata
