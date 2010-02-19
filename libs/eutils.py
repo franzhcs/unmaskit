@@ -19,5 +19,13 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-def does_package_exist(pname):
-	
+import portage
+
+def expand_package_name(pname):
+	PORTDB = portage.portdb
+	matches = PORTDB.xmatch("match-all", pname)
+
+	if matches:
+		return matches[len(matches)-1]
+	else:
+		raise portage.exception.InvalidAtom

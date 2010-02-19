@@ -26,22 +26,37 @@ import os
 import portage
 from optparse import OptionParser
 import commands
+import libs.eutils as eutils
+
+basename = "unmaskit-"
+portage_path = "/etc/portage"
 
 config = {
-	'package_keywords': '/etc/portage/package.keywords',
-	'package_use': '/etc/portage/package.use',
-	'package_unmask': '/etc/portage/package.unmask',
-  'package_to_unmask' : None,
-  'source_file' : None,
-  'destination_file' : None,
-  'verbose' : False,
+	'package_keywords_fname'	: None,
+	'package_use_fname'				: None,
+	'package_unmask_fname'		: None,
+  'package_to_unmask'				: None,
+  'source_file'							: None,
+  'destination_file'				: None,
+  'verbose'									: False,
+  'ask'											: False
 }
 
-def is_entry_a_dir(entry):
+def _is_entry_a_dir(entry):
 	return os.path.isdir(entry)
 
+def get_portage_conf_file():
+	""" This gather informations regarding portage configuration files stored in
+			/etc/portage as they can be files or directories"""
+	if not _is_entry_a_dir("%s/package.keywords" % portage_path):
+		config['package_keywords_fname'] = "%s/package.keywords" % portage_path
+	if not _is_entry_a_dir("%s/package.use" % portage_path):
+		config['package_use_fname'] = "%s/package.use" % portage_path
+	if not _is_entry_a_dir("%s/package.unmask" % portage_path):
+		config['package_unmask_fname'] = "%s/package.unmask" % portage_path
+
 def main():
-	usage = "usage: %prog [options] package"
+	usage = "usage: %prog [options] package-name	"
 	version = "%%prog %s" % __version__
 	parser = OptionParser(
 			usage=usage,
@@ -58,26 +73,35 @@ def main():
 	parser.add_option("-q", "--quiet", action="store_true",
 					dest="quiet", default=False,
 					help="suppress all the output")
+	parser.add_option("-a", "--ask", action="store_true",
+					dest="ask", default=False,
+					help="ask whether to proceed with the action or abort")
 
 	(options, args) = parser.parse_args()
 	config['no_version'] = options.no_version
 	config['pretend'] = options.pretend
 	config['quiet'] = options.quiet
 	
-	print "Using repositories: %s %s" % (portage.settings['PORTDIR'], portage.settings['PORTDIR_OVERLAY'])
-	if (is_entry_a_dir('/etc/portage/package.use')):
-		print "Directory!!"
+#	print "Using repositories: %s %s" % (portage.settings['PORTDIR'], portage.settings['PORTDIR_OVERLAY'])
+
+	get_portage_conf_file()
 
 	# check args and store their values
 	if (len(args)!=1):
 		parser.error("incorrect number of arguments. See -h for usage help.")
 	else:
-		config['package_to_unmask'] = args[0]
+		pname = config['package_to_unmask'] = args[0]
 
 #	os.execve('/bin/sh', ["/bin/sh", '-c', "emerge -pe %s" % config['package_to_unmask']], {})
-	x = commands.getoutput('emerge -pe %s' % config['package_to_unmask'])
+#	x = commands.getoutput('emerge -pe %s' % config['package_to_unmask'])
 
-	print x
+	try:
+		pname_full = eutils.expand_package_name(pname)
+	except:
+		print "Invalid package name '%s'" % pname
+		sys.exit(-1)
+
+	print pname_full
 
 if __name__ == '__main__':
 	sys.exit(main())
