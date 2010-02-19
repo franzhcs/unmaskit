@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # This file is part of unmaskit
@@ -22,6 +21,15 @@
 import portage
 
 def expand_package_name(pname):
+	"""
+		Checkes if pname is a valid atom. If it is, then returns a list containing
+		all the found atom in portage. The last is taken.
+		Example:
+			expand_package_name("nagios") will return
+			[u'net-analyzer/nagios-2.12', u'net-analyzer/nagios-3.0.6',
+				u'net-analyzer/nagios-3.2.0']
+	"""
+
 	PORTDB = portage.portdb
 	matches = PORTDB.xmatch("match-all", pname)
 

@@ -28,6 +28,8 @@ from optparse import OptionParser
 import commands
 import libs.eutils as eutils
 
+warn = sys.stderr
+
 basename = "unmaskit-"
 portage_path = "/etc/portage"
 
@@ -46,8 +48,13 @@ def _is_entry_a_dir(entry):
 	return os.path.isdir(entry)
 
 def get_portage_conf_file():
-	""" This gather informations regarding portage configuration files stored in
-			/etc/portage as they can be files or directories"""
+	"""
+		This gather informations regarding portage configuration files stored in
+		/etc/portage as they can be files or directories.
+		Example:
+			If package.keywords is a directory, None is left in the config dict;
+			if it's a file, then the package_keywords_fname is the file itself
+	"""
 	if not _is_entry_a_dir("%s/package.keywords" % portage_path):
 		config['package_keywords_fname'] = "%s/package.keywords" % portage_path
 	if not _is_entry_a_dir("%s/package.use" % portage_path):
@@ -98,8 +105,8 @@ def main():
 	try:
 		pname_full = eutils.expand_package_name(pname)
 	except:
-		print "Invalid package name '%s'" % pname
-		sys.exit(-1)
+		print >> warn, "Invalid package name '%s'" % pname
+		sys.exit(1)
 
 	print pname_full
 
