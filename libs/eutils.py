@@ -20,6 +20,8 @@
 
 import portage
 
+PORTDB = portage.db[portage.root]["porttree"].dbapi
+
 def expand_package_name(pname):
 	"""
 		Checkes if pname is a valid atom. If it is, then returns a list containing
@@ -29,10 +31,7 @@ def expand_package_name(pname):
 			[u'net-analyzer/nagios-2.12', u'net-analyzer/nagios-3.0.6',
 				u'net-analyzer/nagios-3.2.0']
 	"""
-
-	PORTDB = portage.portdb
-	matches = PORTDB.xmatch("match-all", pname)
-
+	matches = PORTDB.xmatch("match-all",pname)
 	if matches:
 		return matches[len(matches)-1]
 	else:
@@ -57,3 +56,9 @@ def get_package_name_from_atom(aname):
 	import re
 	regstr = "^([a-zA-Z0-9\-_\/\+]*)-([0-9\._]+[a-zA-Z0-9]+)"
 	return re.search(regstr, aname).group(1)
+
+def get_arch():
+	return portage.settings['ARCH']
+
+def get_atom_deps(aname):
+	return PORTDB.aux_get(aname,['DEPEND','RDEPEND','PDEPEND'])

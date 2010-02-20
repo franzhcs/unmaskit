@@ -88,6 +88,7 @@ def main():
 	config['no_version'] = options.no_version
 	config['pretend'] = options.pretend
 	config['quiet'] = options.quiet
+	config['ask'] = options.ask
 	
 #	print "Using repositories: %s %s" % (portage.settings['PORTDIR'], portage.settings['PORTDIR_OVERLAY'])
 
@@ -111,6 +112,7 @@ def main():
 	print aname
 	print eutils.get_version_from_atom(aname)
 	print eutils.get_package_name_from_atom(aname)
+	print eutils.get_atom_deps(aname)
 
 if __name__ == '__main__':
 	sys.exit(main())
