@@ -18,9 +18,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
 import portage
 from portage.exception import InvalidAtom
 
+warn = sys.stderr
 PORTDB = portage.db[portage.root]["porttree"].dbapi
 
 def expand_package_name(pname):
@@ -78,8 +80,8 @@ def get_package_status(aname):
 			return "UNSTABLE"
 		if (( res[0] == "package.mask" )&(res[1] == archstatus)):
 			return "HARDMASKED"
-	except ValueError, e:
-		print "Unable to parse the status of %s.\n%s" % (aname,e)
+	except ValueError as e:
+		print >> warn, "Unable to parse the status of %s.\n" % aname,e
 
 def get_atom_deps(aname):
 	return PORTDB.aux_get(aname,['DEPEND','RDEPEND','PDEPEND'])
