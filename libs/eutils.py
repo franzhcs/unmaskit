@@ -19,6 +19,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import portage
+from portage.exception import InvalidAtom
 
 PORTDB = portage.db[portage.root]["porttree"].dbapi
 
@@ -59,6 +60,26 @@ def get_package_name_from_atom(aname):
 
 def get_arch():
 	return portage.settings['ARCH']
+
+def get_package_status(aname):
+	"""
+		Return the status of a package: stable, unstable, hardmasked, unkeyworded
+		Notice that "stable" could mean "previously unmasked" as well.
+	"""
+	arch = get_arch()
+	archstatus = "~%s keyword" % arch
+	try:
+		res = portage.getmaskingstatus(aname)
+		if not res:
+			return "STABLE"
+		if ( res[0] == "missing keyword" ):
+			return "UNKEYWORDED"
+		if ( res[0] == archstatus):
+			return "UNSTABLE"
+		if (( res[0] == "package.mask" )&(res[1] == archstatus)):
+			return "HARDMASKED"
+	except ValueError, e:
+		print "Unable to parse the status of %s.\n%s" % (aname,e)
 
 def get_atom_deps(aname):
 	return PORTDB.aux_get(aname,['DEPEND','RDEPEND','PDEPEND'])

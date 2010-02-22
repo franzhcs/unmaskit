@@ -111,8 +111,10 @@ def main():
 
 	print aname
 	print eutils.get_version_from_atom(aname)
-	print eutils.get_package_name_from_atom(aname)
-	print eutils.get_atom_deps(aname)
+#	print eutils.get_package_name_from_atom(aname)
+#	print eutils.get_atom_deps(aname)
+	print "status : ", eutils.get_package_status(aname)
+#	print eutils.is_package_keyworded(aname)
 
 if __name__ == '__main__':
 	sys.exit(main())
